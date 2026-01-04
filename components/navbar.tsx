@@ -54,7 +54,7 @@ export function Navbar() {
                             <span className="text-2xl font-bold tracking-tight">
                                 TopNewsDaily
                             </span>
-                            <span className="text-xs text-muted-foreground font-normal text-right">
+                            <span className="text-xs font-normal text-right">
                                 by SpiderBrain
                             </span>
                         </Link>
