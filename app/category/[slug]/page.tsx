@@ -1,6 +1,10 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { getFeed, getCategories } from "@/lib/rss";
+import {
+    getTopHeadlines,
+    GNEWS_CATEGORIES,
+    type GNewsCategory,
+} from "@/lib/gnews";
 import { NewsGrid } from "@/components/news-grid";
 import { NewsGridSkeleton } from "@/components/news-skeleton";
 
@@ -10,11 +14,9 @@ interface CategoryPageProps {
     }>;
 }
 
-// Generate static params for all categories
+// Generate static params for all GNews categories
 export async function generateStaticParams() {
-    const categories = getCategories();
-
-    return categories.map((category) => ({
+    return GNEWS_CATEGORIES.map((category) => ({
         slug: category,
     }));
 }
@@ -33,18 +35,17 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 export default async function CategoryPage({ params }: CategoryPageProps) {
     const { slug } = await params;
 
-    // Check if category exists
-    const categories = getCategories();
-    if (!categories.includes(slug.toLowerCase())) {
+    // Check if category exists in GNews categories
+    if (!GNEWS_CATEGORIES.includes(slug as GNewsCategory)) {
         notFound();
     }
 
-    // Fetch the news feed for this category
-    let newsItems: Awaited<ReturnType<typeof getFeed>>;
+    // Fetch the news for this category from GNews
+    let newsItems: Awaited<ReturnType<typeof getTopHeadlines>>;
     try {
-        newsItems = await getFeed(slug);
+        newsItems = await getTopHeadlines(slug as GNewsCategory);
     } catch (error) {
-        console.error(`Error fetching ${slug} feed:`, error);
+        console.error(`Error fetching ${slug} headlines:`, error);
         newsItems = [];
     }
 

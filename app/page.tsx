@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getAllFeeds, NewsItem } from "@/lib/rss";
+import { getAllHeadlines } from "@/lib/gnews";
 import { NewsGrid } from "@/components/news-grid";
 import { NewsGridSkeleton } from "@/components/news-skeleton";
 
@@ -10,12 +10,12 @@ export const metadata = {
 };
 
 export default async function Home() {
-    // Fetch all news from all categories
-    let newsItems: NewsItem[] = [];
+    // Fetch all news from general category (for homepage)
+    let newsItems: any[] = [];
     try {
-        newsItems = await getAllFeeds();
+        newsItems = await getAllHeadlines();
     } catch (error) {
-        console.error("Error fetching news feeds:", error);
+        console.error("Error fetching news headlines:", error);
         newsItems = [];
     }
 
