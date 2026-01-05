@@ -3,58 +3,21 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
+      // New York Times
       {
         protocol: "https",
-        hostname: "platform.theverge.com",
+        hostname: "static01.nyt.com",
+      },
+      // The Guardian
+      {
+        protocol: "https",
+        hostname: "i.guim.co.uk",
       },
       {
         protocol: "https",
-        hostname: "cdn.vox-cdn.com",
+        hostname: "media.guim.co.uk",
       },
-      {
-        protocol: "https",
-        hostname: "a.espncdn.com",
-      },
-      {
-        protocol: "https",
-        hostname: "www.sciencedaily.com",
-      },
-      {
-        protocol: "https",
-        hostname: "techcrunch.com",
-      },
-      {
-        protocol: "https",
-        hostname: "*.arstechnica.net",
-      },
-      {
-        protocol: "https",
-        hostname: "www.cnet.com",
-      },
-      {
-        protocol: "https",
-        hostname: "s.yimg.com",
-      },
-      {
-        protocol: "https",
-        hostname: "i.kinja-img.com",
-      },
-      {
-        protocol: "https",
-        hostname: "media.wired.com",
-      },
-      {
-        protocol: "https",
-        hostname: "www.nasa.gov",
-      },
-      {
-        protocol: "https",
-        hostname: "media.nature.com",
-      },
-      {
-        protocol: "https",
-        hostname: "scx2.b-cdn.net",
-      },
+      // BBC News
       {
         protocol: "https",
         hostname: "ichef.bbci.co.uk",
@@ -63,12 +26,22 @@ const nextConfig: NextConfig = {
         protocol: "http",
         hostname: "feeds.bbci.co.uk",
       },
+      // Al Jazeera
       {
         protocol: "https",
-        hostname: "*.si.com",
+        hostname: "www.aljazeera.com",
       },
       {
         protocol: "https",
+        hostname: "al-jazeera-prod.cdn.arcpublishing.com",
+      },
+      // Fallback for all other sources
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+      {
+        protocol: "http",
         hostname: "**",
       },
     ],

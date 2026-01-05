@@ -135,10 +135,10 @@ export async function getTopHeadlines(category: GNewsCategory): Promise<NewsItem
       normalizeArticle(article, category)
     );
     
-    // Filter to last 1 week
-    const oneWeekAgo = now - (7 * 24 * 60 * 60 * 1000);
+    // Filter to last 24 hours
+    const twentyFourHoursAgo = now - (24 * 60 * 60 * 1000);
     const recentNews = newsItems.filter(item => 
-      new Date(item.pubDate).getTime() > oneWeekAgo
+      new Date(item.pubDate).getTime() > twentyFourHoursAgo
     );
     
     // Sort by date (newest first)

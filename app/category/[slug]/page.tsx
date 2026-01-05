@@ -1,10 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import {
-    getTopHeadlines,
-    GNEWS_CATEGORIES,
-    type GNewsCategory,
-} from "@/lib/gnews";
+import { getCombinedNews, getAvailableCategories } from "@/lib/news-aggregator";
 import { NewsGrid } from "@/components/news-grid";
 import { NewsGridSkeleton } from "@/components/news-skeleton";
 
@@ -14,9 +10,10 @@ interface CategoryPageProps {
     }>;
 }
 
-// Generate static params for all GNews categories
+// Generate static params for all available categories
 export async function generateStaticParams() {
-    return GNEWS_CATEGORIES.map((category) => ({
+    const categories = getAvailableCategories();
+    return categories.map((category) => ({
         slug: category,
     }));
 }
@@ -28,30 +25,33 @@ export async function generateMetadata({ params }: CategoryPageProps) {
 
     return {
         title: `${category} News - TopNewsDaily`,
-        description: `Today's top ${category.toLowerCase()} news from trusted sources around the world`,
+        description: `Today's top ${category.toLowerCase()} news from New York Times, The Guardian, BBC, Al Jazeera, and more trusted sources`,
     };
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
     const { slug } = await params;
+    const availableCategories = getAvailableCategories();
 
-    // Check if category exists in GNews categories
-    if (!GNEWS_CATEGORIES.includes(slug as GNewsCategory)) {
+    // Check if category exists
+    if (!availableCategories.includes(slug)) {
         notFound();
     }
 
-    // Fetch the news for this category from GNews
-    let newsItems: Awaited<ReturnType<typeof getTopHeadlines>>;
+    // Fetch the news for this category from both RSS and GNews
+    let newsItems: Awaited<ReturnType<typeof getCombinedNews>>;
     try {
-        newsItems = await getTopHeadlines(slug as GNewsCategory);
+        newsItems = await getCombinedNews(slug);
     } catch (error) {
         console.error(`Error fetching ${slug} headlines:`, error);
         newsItems = [];
     }
 
+    const categoryTitle = slug.charAt(0).toUpperCase() + slug.slice(1);
+
     return (
-        <Suspense fallback={<NewsGridSkeleton />}>
-            <NewsGrid items={newsItems} title={`${slug} News`} />
+        <Suspense fallback={<NewsGridSkeleton count={20} />}>
+            <NewsGrid items={newsItems} title={`${categoryTitle} News`} />
         </Suspense>
     );
 }

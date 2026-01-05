@@ -14,66 +14,143 @@ export interface NewsItem {
 
 // Map of categories to multiple RSS feed URLs
 const RSS_FEEDS: Record<string, Array<{ url: string; source: string }>> = {
-  tech: [
+  general: [
     {
-      url: 'https://www.theverge.com/rss/index.xml',
-      source: 'The Verge',
+      url: 'https://www.aljazeera.com/xml/rss/all.xml',
+      source: 'Al Jazeera',
+    },
+  ],
+  world: [
+    {
+      url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml',
+      source: 'New York Times',
     },
     {
-      url: 'https://www.wired.com/feed/rss',
-      source: 'Wired',
+      url: 'https://www.theguardian.com/world/rss',
+      source: 'The Guardian',
     },
     {
-      url: 'https://techcrunch.com/feed/',
-      source: 'TechCrunch',
+      url: 'http://feeds.bbci.co.uk/news/world/rss.xml',
+      source: 'BBC News',
     },
     {
-      url: 'https://feeds.arstechnica.com/arstechnica/index',
-      source: 'Ars Technica',
+      url: 'https://www.aljazeera.com/xml/rss/middleeast.xml',
+      source: 'Al Jazeera',
+    },
+  ],
+  nation: [
+    // Using general US/UK news feeds for nation category
+    {
+      url: 'http://feeds.bbci.co.uk/news/uk/rss.xml',
+      source: 'BBC News',
+    },
+  ],
+  business: [
+    {
+      url: 'https://rss.nytimes.com/services/xml/rss/nyt/Business.xml',
+      source: 'New York Times',
     },
     {
-      url: 'https://www.cnet.com/rss/news/',
-      source: 'CNET',
+      url: 'https://www.theguardian.com/business/rss',
+      source: 'The Guardian',
     },
     {
-      url: 'https://www.engadget.com/rss.xml',
-      source: 'Engadget',
+      url: 'http://feeds.bbci.co.uk/news/business/rss.xml',
+      source: 'BBC News',
+    },
+    {
+      url: 'https://www.aljazeera.com/xml/rss/business.xml',
+      source: 'Al Jazeera',
+    },
+  ],
+  technology: [
+    {
+      url: 'https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml',
+      source: 'New York Times',
+    },
+    {
+      url: 'https://www.theguardian.com/technology/rss',
+      source: 'The Guardian',
+    },
+    {
+      url: 'http://feeds.bbci.co.uk/news/technology/rss.xml',
+      source: 'BBC News',
+    },
+    {
+      url: 'https://www.aljazeera.com/xml/rss/technology.xml',
+      source: 'Al Jazeera',
+    },
+  ],
+  science: [
+    {
+      url: 'https://rss.nytimes.com/services/xml/rss/nyt/Science.xml',
+      source: 'New York Times',
+    },
+    {
+      url: 'https://www.theguardian.com/science/rss',
+      source: 'The Guardian',
+    },
+    {
+      url: 'http://feeds.bbci.co.uk/news/science_and_environment/rss.xml',
+      source: 'BBC News',
+    },
+    {
+      url: 'https://www.aljazeera.com/xml/rss/science.xml',
+      source: 'Al Jazeera',
+    },
+  ],
+  health: [
+    {
+      url: 'https://rss.nytimes.com/services/xml/rss/nyt/Health.xml',
+      source: 'New York Times',
+    },
+    {
+      url: 'https://www.theguardian.com/society/health/rss',
+      source: 'The Guardian',
+    },
+    {
+      url: 'http://feeds.bbci.co.uk/news/health/rss.xml',
+      source: 'BBC News',
+    },
+    {
+      url: 'https://www.aljazeera.com/xml/rss/health.xml',
+      source: 'Al Jazeera',
     },
   ],
   sports: [
     {
-      url: 'https://www.espn.com/espn/rss/news',
-      source: 'ESPN',
+      url: 'https://rss.nytimes.com/services/xml/rss/nyt/Sports.xml',
+      source: 'New York Times',
+    },
+    {
+      url: 'https://www.theguardian.com/sport/rss',
+      source: 'The Guardian',
     },
     {
       url: 'http://feeds.bbci.co.uk/sport/rss.xml',
       source: 'BBC Sport',
     },
     {
-      url: 'https://sports.yahoo.com/rss/',
-      source: 'Yahoo Sports',
+      url: 'https://www.aljazeera.com/xml/rss/sports.xml',
+      source: 'Al Jazeera',
     },
   ],
-  science: [
+  entertainment: [
     {
-      url: 'https://www.sciencedaily.com/rss/all.xml',
-      source: 'Science Daily',
+      url: 'https://rss.nytimes.com/services/xml/rss/nyt/Arts.xml',
+      source: 'New York Times',
     },
     {
-      url: 'https://www.nasa.gov/rss/dyn/breaking_news.rss',
-      source: 'NASA',
+      url: 'https://www.theguardian.com/culture/rss',
+      source: 'The Guardian',
     },
     {
-      url: 'https://www.nature.com/nature.rss',
-      source: 'Nature',
+      url: 'http://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml',
+      source: 'BBC News',
     },
     {
-      url: 'https://phys.org/rss-feed/',
-      source: 'Phys.org',
-    },
-    {
-      url: 'https://www.newscientist.com/feed/home',
-      source: 'New Scientist',
+      url: 'https://www.aljazeera.com/xml/rss/culture.xml',
+      source: 'Al Jazeera',
     },
   ],
 };
@@ -85,7 +162,7 @@ interface CacheEntry {
 }
 
 const cache: Record<string, CacheEntry> = {};
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 // Helper function to extract thumbnail from RSS item
 function extractThumbnail(item: any): string | undefined {

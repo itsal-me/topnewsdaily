@@ -1,15 +1,30 @@
 # TopNewsDaily
 
-A modern news aggregator built with Next.js 14+ that displays top headlines from the last 24 hours using the GNews API.
+A modern news aggregator built with Next.js 14+ that displays top headlines from the last 24 hours from world-class news sources.
 
 ## Features
 
+-   **Multiple News Sources**: Aggregates news from New York Times, The Guardian, BBC News, Al Jazeera, and GNews API
 -   **Real-time News**: Fetches top headlines from 9 different categories
--   **Smart Caching**: Server-side caching with category-specific TTLs to respect API limits
+-   **24-Hour Feed**: Shows only news from the last 24 hours
+-   **Smart Caching**: Server-side caching to optimize performance
 -   **Search Functionality**: Real-time search across titles, descriptions, and sources
 -   **Responsive Design**: Beautiful masonry grid layout with mobile support
 -   **Dark/Light Mode**: Theme switching with smooth transitions
 -   **Modern UI**: Built with Tailwind CSS, shadcn/ui, and Newsreader font
+
+## News Sources
+
+### RSS Feeds (No API Key Required)
+
+-   **New York Times**: World, Business, Technology, Science, Health, Sports, Arts
+-   **The Guardian**: World, Business, Technology, Science, Health, Sports, Culture
+-   **BBC News**: World, Business, Technology, Science, Health, Sports, Entertainment
+-   **Al Jazeera**: General, Middle East, Business, Technology, Science, Health, Sports, Culture
+
+### API
+
+-   **GNews API**: Provides additional top headlines (requires free API key)
 
 ## Categories
 
@@ -29,42 +44,26 @@ A modern news aggregator built with Next.js 14+ that displays top headlines from
 -   **Styling**: Tailwind CSS v4
 -   **UI Components**: shadcn/ui
 -   **Icons**: Lucide React
--   **News API**: GNews API (Free Tier)
+-   **News Sources**: RSS Feeds + GNews API
+-   **RSS Parser**: rss-parser
 -   **Fonts**: Newsreader (serif), Inter (sans-serif)
 
-## API Usage & Caching
+## How It Works
 
-The application uses the GNews API free tier (100 requests/day) with intelligent caching:
+The application combines news from multiple sources:
 
-### Cache TTLs by Category
-
-| Category           | Update Frequency | TTL       | Daily Requests |
-| ------------------ | ---------------- | --------- | -------------- |
-| General (Homepage) | Controlled       | 36 min    | ~40            |
-| Technology         | Medium-fast      | 2 hours   | ~12            |
-| Sports             | Fast             | 1.5 hours | ~16            |
-| Science            | Slow             | 5 hours   | ~5             |
-| Business           | Medium           | 2.5 hours | ~10            |
-| World/Nation       | Medium           | 2.5 hours | ~10 each       |
-| Entertainment      | Medium           | 3.5 hours | ~7             |
-| Health             | Slow             | 5 hours   | ~5             |
-
-**Total estimated daily requests: ~80-85** (safely under the 100 limit)
-
-### How Caching Works
-
-1. First request to a category fetches from GNews API
-2. Subsequent requests within the TTL window use cached data
-3. When cache expires, next request fetches fresh data
-4. All users share the same cache (server-side)
-5. Cache is maintained in-memory for optimal performance
+1. **RSS Feeds**: Fetches from 4 major news organizations (10+ feeds per category)
+2. **GNews API**: Adds top headlines from their API (10 articles per category)
+3. **Deduplication**: Removes duplicate articles based on URL
+4. **24-Hour Filter**: Shows only articles from the last 24 hours
+5. **Caching**: Caches results for 10 minutes to reduce load
 
 ## Getting Started
 
 ### Prerequisites
 
 -   Node.js 18+ installed
--   A GNews API key (get it free at [gnews.io](https://gnews.io/))
+-   A GNews API key (get it free at [gnews.io](https://gnews.io/)) - Optional but recommended
 
 ### Installation
 
