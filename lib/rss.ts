@@ -166,23 +166,70 @@ const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
 
 // Helper function to extract thumbnail from RSS item
 function extractThumbnail(item: any): string | undefined {
-  // Try different common RSS thumbnail formats
-  if (item.enclosure?.url) {
+  // Try to get the highest quality image available
+  
+  // First, try media:content with larger sizes
+  if (item['media:content']) {
+    // Handle array of media:content
+    if (Array.isArray(item['media:content'])) {
+      // Sort by width and get the largest
+      const sorted = item['media:content']
+        .filter((media: any) => media.$?.url && media.$.medium === 'image')
+        .sort((a: any, b: any) => {
+          const widthA = parseInt(a.$?.width || '0');
+          const widthB = parseInt(b.$?.width || '0');
+          return widthB - widthA;
+        });
+      if (sorted.length > 0) {
+        return sorted[0].$.url;
+      }
+    } else if (item['media:content'].$?.url) {
+      return item['media:content'].$.url;
+    }
+  }
+  
+  // Try enclosure (often has full-size images)
+  if (item.enclosure?.url && item.enclosure?.type?.includes('image')) {
     return item.enclosure.url;
   }
-  if (item['media:content']?.$?.url) {
-    return item['media:content'].$.url;
+  
+  // Try media:thumbnail but prefer larger thumbnails
+  if (item['media:thumbnail']) {
+    if (Array.isArray(item['media:thumbnail'])) {
+      // Get the largest thumbnail
+      const sorted = item['media:thumbnail']
+        .sort((a: any, b: any) => {
+          const widthA = parseInt(a.$?.width || '0');
+          const widthB = parseInt(b.$?.width || '0');
+          return widthB - widthA;
+        });
+      if (sorted.length > 0 && sorted[0].$?.url) {
+        return sorted[0].$.url;
+      }
+    } else if (item['media:thumbnail'].$?.url) {
+      return item['media:thumbnail'].$.url;
+    }
   }
-  if (item['media:thumbnail']?.$?.url) {
-    return item['media:thumbnail'].$.url;
-  }
+  
+  // Try to extract from content HTML
   if (item.content && item.content.includes('<img')) {
-    // Extract first image from content
-    const imgMatch = item.content.match(/<img[^>]+src="([^">]+)"/);
+    // Look for larger images in content
+    const imgRegex = /<img[^>]+src="([^">]+)"[^>]*>/g;
+    const matches = [...item.content.matchAll(imgRegex)];
+    if (matches.length > 0) {
+      // Return the first image URL found
+      return matches[0][1];
+    }
+  }
+  
+  // Try contentEncoded
+  if (item.contentEncoded && item.contentEncoded.includes('<img')) {
+    const imgMatch = item.contentEncoded.match(/<img[^>]+src="([^">]+)"/);
     if (imgMatch) {
       return imgMatch[1];
     }
   }
+  
   return undefined;
 }
 
@@ -204,8 +251,9 @@ export async function getFeed(category: string): Promise<NewsItem[]> {
   const parser = new Parser({
     customFields: {
       item: [
-        ['media:content', 'media:content'],
-        ['media:thumbnail', 'media:thumbnail'],
+        ['media:content', 'media:content', {keepArray: true}],
+        ['media:thumbnail', 'media:thumbnail', {keepArray: true}],
+        ['media:group', 'media:group'],
         ['enclosure', 'enclosure'],
         ['content:encoded', 'contentEncoded'],
       ],
